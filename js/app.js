@@ -29,6 +29,15 @@ class Megaroster {
     }
   }
 
+  updateName(name, id) {
+    let index = roster.students.findIndex((currentStudent, i) => {
+      return currentStudent.id == id
+    })
+
+    roster.students[index].name = name
+    this.save()
+  }
+
   removeStudent(ev) {
     const btn = ev.target
     const li = btn.closest('.student')
