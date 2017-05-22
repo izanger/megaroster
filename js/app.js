@@ -29,15 +29,6 @@ class Megaroster {
     }
   }
 
-  updateName(name, id) {
-    let index = roster.students.findIndex((currentStudent, i) => {
-      return currentStudent.id == id
-    })
-
-    roster.students[index].name = name
-    this.save()
-  }
-
   removeStudent(ev) {
     const btn = ev.target
     const li = btn.closest('.student')
@@ -123,7 +114,54 @@ class Megaroster {
       .querySelector('button.move-up')
       .addEventListener('click', this.moveUp.bind(this, student))
 
+    li
+      .querySelector('button.move-down')
+      .addEventListener('click', this.moveDown.bind(this, student))
+
+    li
+      .querySelector('button.edit')
+      .addEventListener('click', this.edit.bind(this, student, li.querySelector('.student-name')))
+
+    // li
+    //   .querySelector('[contenteditable]')
+    //   .addEventListener('blur', this.updateName.bind(this, student))
+
+    // li
+    //   .querySelector('[contenteditable]')
+    //   .addEventListener('keypress', this.saveOnEnter.bind(this))
   }
+
+  edit(student, nameField, ev) {
+    const btn = ev.currentTarget
+    const icon = btn.querySelector('i.fa')
+
+    if (nameField.isContentEditable) {
+      nameField.contentEditable = false
+      btn.classList.remove('success')
+      icon.classList.remove('fa-check')
+      icon.classList.add('fa-pencil')
+      student.name = nameField.textContent
+      this.save()
+    } else {
+      nameField.contentEditable = true
+      btn.classList.add('success')
+      icon.classList.remove('fa-pencil')
+      icon.classList.add('fa-check')
+      nameField.focus()
+    }
+  }
+
+  saveOnEnter(ev) {
+    if (ev.keyCode === 13) {
+      ev.preventDefault()
+      ev.target.blur()
+    }
+  }
+
+  // updateName(student, ev) {
+  //   student.name = ev.target.textContent
+  //   this.save()
+  // }
 
   moveUp(student, ev) {
     const btn = ev.target
@@ -139,6 +177,25 @@ class Megaroster {
       const previousStudent = this.students[index - 1]
       this.students[index - 1] = student
       this.students[index] = previousStudent
+
+      this.save()
+    }
+  }
+
+  moveDown(student, ev) {
+    const btn = ev.target
+    const li = btn.closest('.student')
+
+    const index = this.students.findIndex((currentStudent, i) => {
+      return currentStudent.id === student.id
+    })
+
+    if (index < this.students.length - 1) {
+      this.studentList.insertBefore(li.nextSibling, li)
+
+      const nextStudent = this.students[index + 1]
+      this.students[index + 1] = student
+      this.students[index] = nextStudent
 
       this.save()
     }
